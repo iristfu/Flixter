@@ -6,6 +6,7 @@
 //
 
 #import "MovieViewController.h"
+#import "DetailsViewController.h"
 #import "customClassTableViewCell.h"
 #import "AFNetworking.h"
 #import "UIImageView+AFNetworking.h"
@@ -66,9 +67,9 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     customClassTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"MovieCell" forIndexPath:indexPath];
-    NSLog(@"%@", self.movies);
+//    NSLog(@"%@", self.movies);
     NSDictionary *movie = self.movies[indexPath.row];
-    NSLog(@"%@", movie);
+//    NSLog(@"%@", movie);
     if ([movie[@"poster_path"] isKindOfClass:[NSString class]]) {
          NSString *posterPath = movie[@"poster_path"];
          NSString *posterBaseUrl = @"https://image.tmdb.org/t/p/w500";
@@ -84,9 +85,17 @@
     return cell;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return self.movies.count;
 }
 
+- (void)prepareForSegue:(UIStoryboardSegue *)segue
+                 sender:(id)sender {
+    NSIndexPath *movieIndexPath = [self.tableView indexPathForCell:sender];
+    NSDictionary *movieData = self.movies[movieIndexPath.row];
+    DetailsViewController *detailVC = [segue destinationViewController]; // this line is needed so the next line is valid; need to set the segue
+    detailVC.detailsDict = movieData;
+}
 
 @end
+
