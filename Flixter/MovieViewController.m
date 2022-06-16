@@ -6,19 +6,26 @@
 //
 
 #import "MovieViewController.h"
+#import "customClassTableViewCell.h"
+#import "AFNetworking.h"
+#import "UIImageView+AFNetworking.h"
 
 @interface MovieViewController ()
+//@property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic, strong) NSArray *movies;
-  //remember when a property is set, you must call it with self.myArray
-
 @end
 
 @implementation MovieViewController
 
 
-
 - (void)viewDidLoad {
     [super viewDidLoad];
+    // Initialize a UIRefreshControl
+    UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
+    [refreshControl addTarget:self action:@selector(beginRefresh:) forControlEvents:UIControlEventValueChanged];
+    [self.tableView insertSubview:refreshControl atIndex:0];
+    
+    self.tableView.dataSource = self;
     // Do any additional setup after loading the view.
     NSURL *url = [NSURL URLWithString:@"https://api.themoviedb.org/3/movie/now_playing?api_key=6eae1b2c2fcc45bb59980b5fb824e222"];
     NSURLRequest *request = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:10.0];
@@ -33,26 +40,53 @@
                
                // TODO: Get the array of movies
                self.movies = dataDictionary[@"results"];
-               for (NSString* movie in self.movies) {
-                   NSLog(@"%@", movie);
-               }
+//               for (NSString* movie in self.movies) {
+//                   NSLog(@"%@", movie);
+//               }
                // TODO: Store the movies in a property to use elsewhere
                // TODO: Reload your table view data
-               
+               [self.tableView reloadData];
            }
+            [self beginRefresh:refreshControl];
        }];
     [task resume];
     
 }
 
-/*
-#pragma mark - Navigation
+// Makes a network request to get updated data
+// Updates the tableView with the new data
+// Hides the RefreshControl
+- (void)beginRefresh:(UIRefreshControl *)refreshControl {
+         // Reload the tableView now that there is new data
+          [self.tableView reloadData];
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+         // Tell the refreshControl to stop spinning
+          [refreshControl endRefreshing];
 }
-*/
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+    customClassTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"MovieCell" forIndexPath:indexPath];
+    NSLog(@"%@", self.movies);
+    NSDictionary *movie = self.movies[indexPath.row];
+    NSLog(@"%@", movie);
+    if ([movie[@"poster_path"] isKindOfClass:[NSString class]]) {
+         NSString *posterPath = movie[@"poster_path"];
+         NSString *posterBaseUrl = @"https://image.tmdb.org/t/p/w500";
+         NSString *posterFullPath = [posterBaseUrl stringByAppendingString:posterPath];
+         NSURL *posterURL = [NSURL URLWithString:posterFullPath];
+         [cell.posterImage setImageWithURL:posterURL];
+     }
+     else {
+         cell.posterImage.image = nil;
+    }
+    cell.titleLabel.text = movie[@"original_title"];
+    cell.synopsisLabel.text = movie[@"overview"];
+    return cell;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+    return self.movies.count;
+}
+
 
 @end
