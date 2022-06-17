@@ -13,13 +13,10 @@
 
 @interface MovieViewController ()
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
-
-//@property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic, strong) NSArray *movies;
 @end
 
 @implementation MovieViewController
-
 
 
 - (void)viewDidLoad {
@@ -37,7 +34,6 @@
     [self.tableView insertSubview:refreshControl atIndex:0];
     
     self.tableView.dataSource = self;
-    // Do any additional setup after loading the view.
     NSURL *url = [NSURL URLWithString:@"https://api.themoviedb.org/3/movie/now_playing?api_key=6eae1b2c2fcc45bb59980b5fb824e222"];
     NSURLRequest *request = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:10.0];
     NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:nil delegateQueue:[NSOperationQueue mainQueue]];
