@@ -24,7 +24,10 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    [self loadMovies];
+}
+
+-(void) loadMovies {
     // Start the activity indicator
     [self.activityIndicator startAnimating];
     
@@ -40,10 +43,9 @@
     NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:nil delegateQueue:[NSOperationQueue mainQueue]];
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         
-        
-
            if (error != nil) {
                NSLog(@"%@", [error localizedDescription]);
+               [self showAlertError];
            }
            else {
                NSDictionary *dataDictionary = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
@@ -57,15 +59,14 @@
                // TODO: Store the movies in a property to use elsewhere
                // TODO: Reload your table view data
                [self.tableView reloadData];
-               
-               // Stop the activity indicator
-               // Hides automatically if "Hides When Stopped" is enabled
+
            }
-            [self beginRefresh:refreshControl];
-            [self.activityIndicator stopAnimating];
+        [self beginRefresh:refreshControl];
+        // Stop the activity indicator
+        // Hides automatically if "Hides When Stopped" is enabled
+        [self.activityIndicator stopAnimating];
        }];
     [task resume];
-    
 }
 
 // Makes a network request to get updated data
@@ -101,6 +102,22 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return self.movies.count;
+}
+
+
+- (void)showAlertError {
+    UIAlertController *controller = [UIAlertController alertControllerWithTitle:@"Cannot Get Movies" message:@"The internet connection appears to be offline." preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction *buttonOk = [UIAlertAction actionWithTitle:@"Try Again" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [self actionTryAgain];
+    }];
+       
+    [controller addAction:buttonOk];
+    [self presentViewController:controller animated:YES completion:nil];
+}
+ 
+-(void) actionTryAgain {
+    [self loadMovies];
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue
