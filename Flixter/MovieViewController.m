@@ -12,6 +12,8 @@
 #import "UIImageView+AFNetworking.h"
 
 @interface MovieViewController ()
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
+
 //@property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic, strong) NSArray *movies;
 @end
@@ -19,8 +21,13 @@
 @implementation MovieViewController
 
 
+
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    // Start the activity indicator
+    [self.activityIndicator startAnimating];
+    
     // Initialize a UIRefreshControl
     UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
     [refreshControl addTarget:self action:@selector(beginRefresh:) forControlEvents:UIControlEventValueChanged];
@@ -32,6 +39,9 @@
     NSURLRequest *request = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:10.0];
     NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:nil delegateQueue:[NSOperationQueue mainQueue]];
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        
+        
+
            if (error != nil) {
                NSLog(@"%@", [error localizedDescription]);
            }
@@ -47,8 +57,12 @@
                // TODO: Store the movies in a property to use elsewhere
                // TODO: Reload your table view data
                [self.tableView reloadData];
+               
+               // Stop the activity indicator
+               // Hides automatically if "Hides When Stopped" is enabled
            }
             [self beginRefresh:refreshControl];
+            [self.activityIndicator stopAnimating];
        }];
     [task resume];
     
