@@ -41,13 +41,13 @@ Please list two areas of the assignment you'd like to **discuss further with you
 
 Here's a walkthrough of implemented user stories:
 
-<img src='https://i.imgur.com/aq5SxbH.mp4' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src='https://github.com/iristfu/Flixter/blob/main/Flixter.gif' width='' alt='Video Walkthrough' />
 
 GIF created with [Kap](https://getkap.co/).
 
 ## Notes
 
-The most challenging part of this project was learning about view controllers and how to connect elements from the story board to their respective .h and .c files. It was also rewarding and challenging to learn about how AFNetworking, utilizing the API, and passing the data through a segue from the MovieViewController to the DetailsViewController. 
+The most challenging part of this project was learning about view controllers and how to connect elements from the story board to their respective .h and .c files. It was also rewarding and challenging to learn about AFNetworking, how to fetch data from an API, and passing  data through a segue from the MovieViewController to the DetailsViewController. 
 
 ## Credits
 
