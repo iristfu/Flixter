@@ -25,7 +25,6 @@
 }
 
 -(void) loadMovies {
-    // Start the activity indicator
     [self.activityIndicator startAnimating];
     
     // Initialize a UIRefreshControl
@@ -38,28 +37,16 @@
     NSURLRequest *request = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:10.0];
     NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:nil delegateQueue:[NSOperationQueue mainQueue]];
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        
            if (error != nil) {
                NSLog(@"%@", [error localizedDescription]);
                [self showAlertError];
            }
            else {
                NSDictionary *dataDictionary = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
-//               NSLog(@"%@", dataDictionary);// log an object with the %@ formatter.
-               
-               // TODO: Get the array of movies
                self.movies = dataDictionary[@"results"];
-//               for (NSString* movie in self.movies) {
-//                   NSLog(@"%@", movie);
-//               }
-               // TODO: Store the movies in a property to use elsewhere
-               // TODO: Reload your table view data
                [self.tableView reloadData];
-
            }
         [self beginRefresh:refreshControl];
-        // Stop the activity indicator
-        // Hides automatically if "Hides When Stopped" is enabled
         [self.activityIndicator stopAnimating];
        }];
     [task resume];
@@ -71,16 +58,14 @@
 - (void)beginRefresh:(UIRefreshControl *)refreshControl {
          // Reload the tableView now that there is new data
           [self.tableView reloadData];
-
+    
          // Tell the refreshControl to stop spinning
           [refreshControl endRefreshing];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     customClassTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"MovieCell" forIndexPath:indexPath];
-//    NSLog(@"%@", self.movies);
     NSDictionary *movie = self.movies[indexPath.row];
-//    NSLog(@"%@", movie);
     if ([movie[@"poster_path"] isKindOfClass:[NSString class]]) {
          NSString *posterPath = movie[@"poster_path"];
          NSString *posterBaseUrl = @"https://image.tmdb.org/t/p/w500";
@@ -104,11 +89,11 @@
 - (void)showAlertError {
     UIAlertController *controller = [UIAlertController alertControllerWithTitle:@"Cannot Get Movies" message:@"The internet connection appears to be offline." preferredStyle:UIAlertControllerStyleAlert];
     
-    UIAlertAction *buttonOk = [UIAlertAction actionWithTitle:@"Try Again" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+    UIAlertAction *buttonTryAgain = [UIAlertAction actionWithTitle:@"Try Again" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         [self actionTryAgain];
     }];
        
-    [controller addAction:buttonOk];
+    [controller addAction:buttonTryAgain];
     [self presentViewController:controller animated:YES completion:nil];
 }
  
